@@ -1,90 +1,90 @@
 class Original:
-	"""
-	ROOT Hips
-	JOINT LHipJoint
-		JOINT LeftUpLeg
-			JOINT LeftLeg
-				JOINT LeftFoot
-					JOINT LeftToeBase
-	JOINT RHipJoint
-		JOINT RightUpLeg
-			JOINT RightLeg
-				JOINT RightFoot
-					JOINT RightToeBase
-	JOINT LowerBack
-		JOINT Spine
-			JOINT Spine1
-				JOINT Neck
-					JOINT Neck1
-						JOINT Head
-				JOINT LeftShoulder
-					JOINT LeftArm
-						JOINT LeftForeArm
-							JOINT LeftHand
-								JOINT LeftFingerBase
-									JOINT LeftHandIndex1
-								JOINT LThumb
-				JOINT RightShoulder
-					JOINT RightArm
-						JOINT RightForeArm
-							JOINT RightHand
-								JOINT RightFingerBase
-									JOINT RightHandIndex1
-								JOINT RThumb
-	"""
+    """
+    ROOT Hips
+    JOINT LHipJoint
+        JOINT LeftUpLeg
+            JOINT LeftLeg
+                JOINT LeftFoot
+                    JOINT LeftToeBase
+    JOINT RHipJoint
+        JOINT RightUpLeg
+            JOINT RightLeg
+                JOINT RightFoot
+                    JOINT RightToeBase
+    JOINT LowerBack
+        JOINT Spine
+            JOINT Spine1
+                JOINT Neck
+                    JOINT Neck1
+                        JOINT Head
+                JOINT LeftShoulder
+                    JOINT LeftArm
+                        JOINT LeftForeArm
+                            JOINT LeftHand
+                                JOINT LeftFingerBase
+                                    JOINT LeftHandIndex1
+                                JOINT LThumb
+                JOINT RightShoulder
+                    JOINT RightArm
+                        JOINT RightForeArm
+                            JOINT RightHand
+                                JOINT RightFingerBase
+                                    JOINT RightHandIndex1
+                                JOINT RThumb
+    """
 
-	JOINT_NUM = 31
+    JOINT_NUM = 31
 
-	SDR_L, SDR_R, HIP_L, HIP_R = 18, 25, 2, 7
-	FOOT_L = [4,5]
-	FOOT_R = [9,10]
-	HEAD = 16
-	FILTER_OUT = []
-	JOINT_SCALE = 5.644
+    SDR_L, SDR_R, HIP_L, HIP_R = 18, 25, 2, 7
+    FOOT_L = [4,5]
+    FOOT_R = [9,10]
+    HEAD = 16
+    FILTER_OUT = []
+    JOINT_SCALE = 5.644
 
-	JOINT_WEIGHTS = [
-		1,
-		1e-10, 1, 1, 1, 1,
-		1e-10, 1, 1, 1, 1,
-		1e-10, 1, 1,
-		1e-10, 1, 1,
-		1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10,
-		1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10 ]
+    JOINT_WEIGHTS = [
+        1,
+        1e-10, 1, 1, 1, 1,
+        1e-10, 1, 1, 1, 1,
+        1e-10, 1, 1,
+        1e-10, 1, 1,
+        1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10,
+        1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10 ]
 
 class Games:
-	"""
-	ROOT RootJoint
-		JOINT lHip
-			JOINT lKnee
-				JOINT lAnkle
-					JOINT lToeJoint
-		JOINT rHip
-			JOINT rKnee
-				JOINT rAnkle
-					JOINT rToeJoint
-		JOINT pelvis_lowerback
-			JOINT lowerback_torso
-				JOINT torso_head
-				JOINT lTorso_Clavicle
-					JOINT lShoulder
-						JOINT lElbow
-							JOINT lWrist
-				JOINT rTorso_Clavicle
-					JOINT rShoulder
-						JOINT rElbow
-							JOINT rWrist
-	"""
+    """
+    ROOT RootJoint
+        JOINT lHip
+            JOINT lKnee
+                JOINT lAnkle
+                    JOINT lToeJoint
+        JOINT rHip
+            JOINT rKnee
+                JOINT rAnkle
+                    JOINT rToeJoint
+        JOINT pelvis_lowerback
+            JOINT lowerback_torso
+                JOINT torso_head
+                JOINT lTorso_Clavicle
+                    JOINT lShoulder
+                        JOINT lElbow
+                            JOINT lWrist
+                JOINT rTorso_Clavicle
+                    JOINT rShoulder
+                        JOINT rElbow
+                            JOINT rWrist
+    """
  
-	JOINT_NUM = 20
+    JOINT_NUM = 20
 
-	SDR_L, SDR_R, HIP_L, HIP_R = 13, 17, 1, 5
-	FOOT_L = [3,4]
-	FOOT_R = [7,8]
-	HEAD = 11
-	FILTER_OUT = []
-	JOINT_SCALE = 1
+    SDR_L, SDR_R, HIP_L, HIP_R = 13, 17, 1, 5
+    FOOT_L = [3,4]
+    FOOT_R = [7,8]
+    HEAD = 11
+    FILTER_OUT = []
+    JOINT_SCALE = 1
 
-	JOINT_WEIGHTS = [1] * JOINT_NUM
+    JOINT_WEIGHTS = [1] * JOINT_NUM
 
 
 # """
@@ -147,8 +147,8 @@ class Games:
 # JOINT_WEIGHTS = [
 #     1,
 #     1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1,
-# 	1, 1, 1, 1,
-# 	            1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1,
-# 				1, 1e-10, 1, 1e-10, 1e-10,
-# 	            1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1,
+#     1, 1, 1, 1,
+#     1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1,
+#     1, 1e-10, 1, 1e-10, 1e-10,
+#     1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1,
 #     1, 1e-10, 1e-10, 1, 1e-10, 1e-10, 1, 1e-10, 1 ]

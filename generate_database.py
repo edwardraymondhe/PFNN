@@ -604,7 +604,7 @@ for data in data_terrain:
     
     anim, names, _ = BVH.load(data)
     anim2, names2 = filter_joints(anim, names)
-	
+    
     """ Dump joint lists"""
     #BVH.save("stripped.bvh", anim, names, 1.0/120.0, 'zyx', True, True)
     
