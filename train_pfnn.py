@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import theano
 import theano.tensor as T
-import skeletondef as skd
+from skeletondef import Original as skd
 theano.config.allow_gc = True
 
 sys.path.append('./nn')

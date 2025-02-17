@@ -15,18 +15,18 @@ sparsity =  15
 
 heightmaps = [
     './data/heightmaps/hmap_001_smooth.txt',
-    './data/heightmaps/hmap_002_smooth.txt',
-    './data/heightmaps/hmap_003_smooth.txt',
-    './data/heightmaps/hmap_004_smooth.txt',
-    './data/heightmaps/hmap_005_smooth.txt',
-    './data/heightmaps/hmap_006_smooth.txt',
-    './data/heightmaps/hmap_007_smooth.txt',
-    './data/heightmaps/hmap_009_smooth.txt',
-    './data/heightmaps/hmap_010_smooth.txt',
-    './data/heightmaps/hmap_011_smooth.txt',
-    './data/heightmaps/hmap_012_smooth.txt',
-    './data/heightmaps/hmap_013_smooth.txt',
-    './data/heightmaps/hmap_014_smooth.txt',
+    # './data/heightmaps/hmap_002_smooth.txt',
+    # './data/heightmaps/hmap_003_smooth.txt',
+    # './data/heightmaps/hmap_004_smooth.txt',
+    # './data/heightmaps/hmap_005_smooth.txt',
+    # './data/heightmaps/hmap_006_smooth.txt',
+    # './data/heightmaps/hmap_007_smooth.txt',
+    # './data/heightmaps/hmap_009_smooth.txt',
+    # './data/heightmaps/hmap_010_smooth.txt',
+    # './data/heightmaps/hmap_011_smooth.txt',
+    # './data/heightmaps/hmap_012_smooth.txt',
+    # './data/heightmaps/hmap_013_smooth.txt',
+    # './data/heightmaps/hmap_014_smooth.txt',
 ]
 
 """ Patches / Coordinates """

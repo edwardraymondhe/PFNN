@@ -4,7 +4,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 import scipy.ndimage.filters as filters
 
-import skeletondef as skd
+from skeletondef import Games as skd
 
 sys.path.append('./motion')
 
@@ -112,7 +112,13 @@ data_terrain = [
     './data/animations/NewCaptures11_000_mirror.bvh',
 ]
 
-#data_terrain = ['./data/animations/LocomotionFlat01_000.bvh']
+data_terrain = ['./data/animations/LocomotionFlat01_000.bvh']
+
+data_terrain = ['./data/reference/walkF.bvh']
+
+# database_name = 'database.npz'
+database_name = 'database_games.npz'
+
 """ filter out joints """
 def filter_joints(anim, names):
     indices = []
@@ -706,5 +712,5 @@ print(Xun.shape, Yun.shape, Pun.shape)
 
 print('Saving Database...')
 
-np.savez_compressed('database.npz', Xun=Xun, Yun=Yun, Pun=Pun)
+np.savez_compressed(database_name, Xun=Xun, Yun=Yun, Pun=Pun)
 

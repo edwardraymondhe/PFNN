@@ -1,0 +1,41 @@
+1 ROOT Hips
+0 JOINT LHipJoint
+1	JOINT LeftUpLeg
+1		JOINT LeftLeg
+1			JOINT LeftFoot
+1				JOINT LeftToeBase
+0 JOINT RHipJoint
+1	JOINT RightUpLeg
+1		JOINT RightLeg
+1			JOINT RightFoot
+1				JOINT RightToeBase
+0JOINT LowerBack
+1	JOINT Spine
+1		JOINT Spine1
+0			JOINT Neck
+1				JOINT Neck1
+1					JOINT Head
+0            JOINT LeftShoulder
+1                JOINT LeftArm
+1                    JOINT LeftForeArm
+1                        JOINT LeftHand
+0                            JOINT LeftFingerBase
+0                                JOINT LeftHandIndex1
+0                            JOINT LThumb
+0            JOINT RightShoulder
+1                JOINT RightArm
+1                    JOINT RightForeArm
+1                        JOINT RightHand
+0                            JOINT RightFingerBase
+0                                JOINT RightHandIndex1
+0                            JOINT RThumb
+                            
+                            
+JOINT_WEIGHTS = [
+1,
+1e-10, 1, 1, 1, 1,
+1e-10, 1, 1, 1, 1,
+1e-10, 1, 1,
+1e-10, 1, 1,
+1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10,
+1e-10, 1, 1, 1, 1e-10, 1e-10, 1e-10 ]

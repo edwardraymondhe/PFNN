@@ -8,6 +8,7 @@ import os
 import numpy as np
 import scipy.interpolate as interpolate
 import scipy.ndimage.filters as filters
+from skeletondef import Games as skd
 
 sys.path.append('./motion')
 
@@ -16,13 +17,13 @@ import Animation as Animation
 from Quaternions import Quaternions
 from Pivots import Pivots
 
-to_meters = 5.6444
-njoints = 31
+to_meters = skd.JOINT_SCALE
+njoints = skd.JOINT_NUM
 
-lfoot = 4
-rfoot = 9
-ltoe = 5
-rtoe = 10
+lfoot = skd.FOOT_L[0]
+ltoe = skd.FOOT_L[1]
+rfoot = skd.FOOT_R[0]
+rtoe = skd.FOOT_R[1]
 
 data_terrain = [
     './data/animations/LocomotionFlat01_000.bvh',
@@ -112,6 +113,8 @@ data_terrain = [
     './data/animations/NewCaptures11_000_mirror.bvh',
 ]
 
+data_terrain = ['./data/reference/walkF.bvh']
+
 for data in data_terrain:
 
 	print('Processing Clip %s' % data)
@@ -121,6 +124,16 @@ for data in data_terrain:
 	""" Load Data """
 	
 	anim, names, _ = BVH.load(data)
+    print(len(anim.parents), len(names))
+    d = dict()
+    for i in range(len(anim.parents)):
+        if anim.parents[i] not in d:
+            d[anim.parents[i]] = []
+        d[anim.parents[i]].append(i)
+     
+    for key in d:
+        print(f"{names[key]} ->\n{[names[i] for i in d[key]]}")
+  
 	anim.offsets *= to_meters
 	anim.positions *= to_meters
 	#anim = anim[::2]
@@ -152,10 +165,24 @@ for data in data_terrain:
 
 	LR = 0
 	for i in range(AVG_RANGE, tlen-AVG_RANGE-1, 1):
+		# ORIGINAL
+  
 		#ACC_EPSILON = 0
 		ACC_EPSILON = 0.175
 		#ACC_EPSILON = 0.006
 		MULTIPLIER = 2.875
+		LHEEL_SPEED_EPSILON = 0.375
+		RHEEL_SPEED_EPSILON = 0.375
+		LTOE_SPEED_EPSILON = 0.0875
+		RTOE_SPEED_EPSILON = 0.0875
+		# LHEEL_SPEED_EPSILON = avg_lfs * 0.285
+		# RHEEL_SPEED_EPSILON = avg_rfs * 0.285
+		# LTOE_SPEED_EPSILON = avg_lts * 0.285
+		# RTOE_SPEED_EPSILON = avg_rts * 0.285
+  
+  
+		ACC_EPSILON = 0.006
+		MULTIPLIER = 1
 		LHEEL_SPEED_EPSILON = 0.375
 		RHEEL_SPEED_EPSILON = 0.375
 		LTOE_SPEED_EPSILON = 0.0875
@@ -208,6 +235,7 @@ for data in data_terrain:
 			dLTS = NEW_LTS - LTS
 			dOLD_LFS = LFS - OLD_LFS
 			dOLD_LTS = LTS - OLD_LTS
+			print("Left delta: ",dLFS, dLTS)
 		
 			if(LFS < LHEEL_SPEED_EPSILON and LTS < LTOE_SPEED_EPSILON \
 			or ((LFS < LHEEL_SPEED_EPSILON*MULTIPLIER and LTS < LTOE_SPEED_EPSILON*MULTIPLIER) and ((dLFS >= ACC_EPSILON and dOLD_LFS <= -ACC_EPSILON) or (dLTS >= ACC_EPSILON and dOLD_LTS < -ACC_EPSILON))) ):
@@ -216,7 +244,7 @@ for data in data_terrain:
 				if len(footsteps)>0:	#R must start first
 					if LR != -1:
 						LR = -1
-						print("L %d: " %(i))
+						# print("L %d: " %(i))
 						footsteps.append(i)
 
 		elif LR != 1 :#and RHEEL_SPEED_EPSILON > 0.00175 and RTOE_SPEED_EPSILON > 0.00175:
@@ -229,11 +257,12 @@ for data in data_terrain:
 			dRTS = NEW_RTS - RTS
 			dOLD_RFS = RFS - OLD_RFS
 			dOLD_RTS = RTS - OLD_RTS
+			# print("Right delta: ",dRFS, dRTS)
 		
 			if( RFS < RHEEL_SPEED_EPSILON and RTS < RTOE_SPEED_EPSILON \
 			or (RFS < RHEEL_SPEED_EPSILON*MULTIPLIER and RTS < RTOE_SPEED_EPSILON*MULTIPLIER and ((dRFS >= ACC_EPSILON and dOLD_RFS < -ACC_EPSILON) or (dRTS >= ACC_EPSILON and dOLD_RTS < -ACC_EPSILON)))):
 				LR = 1
-				print("R %d: " %(i))
+				# print("R %d: " %(i))
 				footsteps.append(i)
 	
 	#remove redundant frames
@@ -267,7 +296,7 @@ for data in data_terrain:
 	f.close()
 	
 	f = open(data.replace('.bvh','.phase'), 'w')
-	
+	print(footsteps)
 	for i in range(0, footsteps[0]):
 		f.writelines("%f\n" % float(0) )
 		
