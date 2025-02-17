@@ -1,3 +1,4 @@
+""" 原版
 ROOT Hips
 JOINT LHipJoint
 	JOINT LeftUpLeg
@@ -29,6 +30,35 @@ JOINT LowerBack
 								JOINT RightFingerBase
 									JOINT RightHandIndex1
 								JOINT RThumb
+"""
+
+""" 希望适配的版本
+HIERARCHY
+ROOT RootJoint
+    JOINT lHip
+        JOINT lKnee
+            JOINT lAnkle
+                JOINT lToeJoint
+                    End Site
+    JOINT rHip
+        JOINT rKnee
+            JOINT rAnkle
+                JOINT rToeJoint
+                    End Site
+    JOINT pelvis_lowerback
+        JOINT lowerback_torso
+            JOINT torso_head
+                End Site
+            JOINT lTorso_Clavicle
+                JOINT lShoulder
+                    JOINT lElbow
+                        JOINT lWrist
+                            End Site
+            JOINT rTorso_Clavicle
+                JOINT rShoulder
+                    JOINT rElbow
+                        JOINT rWrist
+                            End Site
 """
 
 """

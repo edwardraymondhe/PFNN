@@ -1030,7 +1030,7 @@ static glm::vec2 segment_nearest(glm::vec2 v, glm::vec2 w, glm::vec2 p) {
   return v + t * (w - v);
 }
 
-/* Reset */
+/* Reset 姿态初始化 */
 
 static void reset(glm::vec2 position) {
 
@@ -1658,10 +1658,10 @@ static void pre_render() {
     pfnn->Xp(o+(w*2)+(i/10)) = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
   }
     
-  /* Perform Regression */
+  /* Perform Regression 网络预测 */
   
   clock_t time_start = clock();
-    
+  
   pfnn->predict(character->phase);
 
   clock_t time_end = clock();

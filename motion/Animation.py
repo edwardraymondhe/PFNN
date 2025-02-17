@@ -254,9 +254,11 @@ def transforms_global(anim):
     locals  = transforms_local(anim)
     globals = transforms_blank(anim)
 
+    # Q_0 = R_0
     globals[:,0] = locals[:,0]
     
     for i in range(1, anim.shape[1]):
+        # Q_i = Q_pi * R_i
         globals[:,i] = transforms_multiply(globals[:,anim.parents[i]], locals[:,i])
         
     return globals

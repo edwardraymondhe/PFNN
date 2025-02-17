@@ -176,48 +176,76 @@ patches_coord = patches_database['C'].astype(np.float32)
 
 def process_data(anim, phase, gait, type='flat'):
     
-    """ Do FK """
+    """ Do FK 前向动力学 """
+    # 每帧 每关节的全局旋转矩阵 根据各自的局部旋转得到全局旋转
     global_xforms = Animation.transforms_global(anim)
-    global_positions = global_xforms[:,:,:3,3] / global_xforms[:,:,3:,3]
+    # 每帧 每关节的全局位置
+    global_positions = global_xforms[:, :, :3, 3] / global_xforms[:, :, 3:, 3]
+    # 每帧 每关节的全局旋转四元数表示
     global_rotations = Quaternions.from_transforms(global_xforms)
     
     """ Extract Forward Direction """
-    
+    # 肩和髋向量之和
     across = (
         (global_positions[:,skd.SDR_L] - global_positions[:,skd.SDR_R]) + 
         (global_positions[:,skd.HIP_L] - global_positions[:,skd.HIP_R]))
+    # 取单位向量
     across = across / np.sqrt((across**2).sum(axis=-1))[...,np.newaxis]
     
     """ Smooth Forward Direction """
     
+    # 顺滑 + 与Y轴做叉乘
+    # 得到 Forward
     direction_filterwidth = 20
     forward = filters.gaussian_filter1d(
         np.cross(across, np.array([[0,1,0]])), direction_filterwidth, axis=0, mode='nearest')    
+    # 取单位向量
     forward = forward / np.sqrt((forward**2).sum(axis=-1))[...,np.newaxis]
 
     root_rotation = Quaternions.between(forward, 
         np.array([[0,0,1]]).repeat(len(forward), axis=0))[:,np.newaxis] 
     
-    """ Local Space """
+    """ Local Space 计算局部坐标信息 """
     
     local_positions = global_positions.copy()
+    
+    # 局部位置
+    # 各帧中所有关节x,z - 根关节x,z 
+    # 局部坐标信息的定义和 Games105不同
+    # 根据根关节，而不是根据父关节
     local_positions[:,:,0] = local_positions[:,:,0] - local_positions[:,0:1,0]
     local_positions[:,:,2] = local_positions[:,:,2] - local_positions[:,0:1,2]
     
+    # 左乘 root_rotation[:-1] 意义是 "以第一帧作为参考帧" 消除绝对方向的影响
     local_positions = root_rotation[:-1] * local_positions[:-1]
-    local_velocities = root_rotation[:-1] *  (global_positions[1:] - global_positions[:-1])
+    
+    # 局部速度
+    # 以第一帧作为参考帧
+    global_velocities = global_positions[1:] - global_positions[:-1] # 下一帧 - 上一帧 = 速度/方向
+    local_velocities = root_rotation[:-1] * global_velocities
+    
+    # 局部旋转
+    # 以第一帧作为参考帧
     local_rotations = ((root_rotation[:-1] * global_rotations[:-1]))
+    
     #print('hips (w,x,y,z)=' + str(abs((root_rotation[:-1] * global_rotations[:-1]))[0][0]))
     #print('hips log(w,x,y,z)=' + str(local_rotations[0][0]))
     
+    # 根节点 速度 & 旋转速度
     root_velocity = root_rotation[:-1] * (global_positions[1:,0:1] - global_positions[:-1,0:1])
     root_rvelocity = Pivots.from_quaternions(root_rotation[1:] * -root_rotation[:-1]).ps
     
-    """ Foot Contacts """
-    
+    """ Foot Contacts 计算脚触地状态 """
+
+    # 针对每只脚的脚跟和脚尖, 利用相邻帧的差值是否小于某个阈值来判断
+    # 分别判断左脚的脚跟和脚尖的触地状态, 右脚的脚跟和脚尖的触地状态, 触地为1, 否则为0
+    # 分别存储脚跟和脚尖的触地信息
     fid_l, fid_r = np.array(skd.FOOT_L), np.array(skd.FOOT_R)
     velfactor = np.array([0.02, 0.02])
     
+    # [1:,_,_], [:-1,_,_] 代表相邻帧
+    # [_,fdl,_] 代表左脚
+    # [_,_,0] 代表关节的x坐标
     feet_l_x = (global_positions[1:,fid_l,0] - global_positions[:-1,fid_l,0])**2
     feet_l_y = (global_positions[1:,fid_l,1] - global_positions[:-1,fid_l,1])**2
     feet_l_z = (global_positions[1:,fid_l,2] - global_positions[:-1,fid_l,2])**2
@@ -228,8 +256,9 @@ def process_data(anim, phase, gait, type='flat'):
     feet_r_z = (global_positions[1:,fid_r,2] - global_positions[:-1,fid_r,2])**2
     feet_r = (((feet_r_x + feet_r_y + feet_r_z) < velfactor)).astype(np.float)
     
-    """ Phase """
+    """ Phase 相位 """
     
+    # 相邻帧的相位变化量delta
     dphase = phase[1:] - phase[:-1]
     dphase[dphase < 0] = (1.0-phase[:-1]+phase[1:])[dphase < 0]
     
@@ -250,12 +279,22 @@ def process_data(anim, phase, gait, type='flat'):
     
     Pc, Xc, Yc = [], [], []
     
+    # 窗口中心是 i ~~ [window, len(anim) - window-1]
+    # 窗口大小是 2 * window
     for i in range(window, len(anim)-window-1, 1):
         
+        # global_positions[i-window:i+window : 10, 0]
+        # i-window:i+window  范围切片
+        # 10  步长
+        # 0  第二个维度的数据 根节点
+        # 第i帧前后共2*window大小 步长10 的数据
+        # 减去 第i帧的数据
+        # 如果window = 60, 则window * 2 = 120, 120 / 10 = 12帧
         rootposs = root_rotation[i:i+1,0] * (global_positions[i-window:i+window:10,0] - global_positions[i:i+1,0])
         rootdirs = root_rotation[i:i+1,0] * forward[i-window:i+window:10]    
         rootgait = gait[i-window:i+window:10]
         
+        # 第一帧下标是 Window
         Pc.append(phase[i])
         
         """ Unify Quaternions To Single Pole """
@@ -291,29 +330,29 @@ def process_data(anim, phase, gait, type='flat'):
         # # print("*********************************")
         
         Xc.append(np.hstack([
-                rootposs[:,0].ravel(), rootposs[:,2].ravel(), # Trajectory Pos
-                rootdirs[:,0].ravel(), rootdirs[:,2].ravel(), # Trajectory Dir
-                rootgait[:,0].ravel(), rootgait[:,1].ravel(), # Trajectory Gait
-                rootgait[:,2].ravel(), rootgait[:,3].ravel(), 
+                rootposs[:,0].ravel(), rootposs[:,2].ravel(),   # Trajectory Pos, t_i_p
+                rootdirs[:,0].ravel(), rootdirs[:,2].ravel(),   # Trajectory Dir, t_i_d
+                rootgait[:,0].ravel(), rootgait[:,1].ravel(),   # Trajectory Gait, t_i_g
+                rootgait[:,2].ravel(), rootgait[:,3].ravel(),
                 rootgait[:,4].ravel(), rootgait[:,5].ravel(), 
-                local_positions[i-1].ravel(),  # Joint Pos
-                local_velocities[i-1].ravel(), # Joint Vel
+                local_positions[i-1].ravel(),                   # Joint Pos, j_i-1_p
+                local_velocities[i-1].ravel(),                  # Joint Vel, j_i-1_v
                 ]))
         
         rootposs_next = root_rotation[i+1:i+2,0] * (global_positions[i+1:i+window+1:10,0] - global_positions[i+1:i+2,0])
         rootdirs_next = root_rotation[i+1:i+2,0] * forward[i+1:i+window+1:10]   
         
         Yc.append(np.hstack([
-                root_velocity[i,0,0].ravel(), # Root Vel X
-                root_velocity[i,0,2].ravel(), # Root Vel Y
-                root_rvelocity[i].ravel(),    # Root Rot Vel
-                dphase[i],                    # Change in Phase
-                np.concatenate([feet_l[i], feet_r[i]], axis=-1), # Contacts
-                rootposs_next[:,0].ravel(), rootposs_next[:,2].ravel(), # Next Trajectory Pos
-                rootdirs_next[:,0].ravel(), rootdirs_next[:,2].ravel(), # Next Trajectory Dir
-                local_positions[i].ravel(),  # Joint Pos
-                local_velocities[i].ravel(), # Joint Vel
-                local_rotations[i].log().ravel() # Joint Rot
+                root_velocity[i,0,0].ravel(),                                   # Root Vel X, r_i_x
+                root_velocity[i,0,2].ravel(),                                   # Root Vel Y, r_i_z
+                root_rvelocity[i].ravel(),                                      # Root Rot Vel, r_i_a
+                dphase[i],                                                      # Change in Phase, p_i
+                np.concatenate([feet_l[i], feet_r[i]], axis=-1),                # Contacts, c_i
+                rootposs_next[:,0].ravel(), rootposs_next[:,2].ravel(),         # Next Trajectory Pos, t_i+1_p
+                rootdirs_next[:,0].ravel(), rootdirs_next[:,2].ravel(),         # Next Trajectory Dir, t_i+1_d
+                local_positions[i].ravel(),                                     # Joint Pos, j_i_p
+                local_velocities[i].ravel(),                                    # Joint Vel, j_i_v
+                local_rotations[i].log().ravel()                                # Joint Rot, j_i_a
                 ]))
                                                 
     return np.array(Pc), np.array(Xc), np.array(Yc)
@@ -580,11 +619,16 @@ for data in data_terrain:
     anim = anim[::2]
     """ Load Phase / Gait """
     
+    # 相位数据
     phase = np.loadtxt(data.replace('.bvh', '.phase'))[::2]
     gait = np.loadtxt(data.replace('.bvh', '.gait'))[::2]
 
     """ Merge Jog / Run and Crouch / Crawl """
     
+    # 8种运动风格 合并成6种 不是binary-vector
+    # 1.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000 0.00000
+    # 0.30667 0.00000 0.00000 0.69333 0.00000 0.00000 0.00000 0.00000
+    # 0.00000 0.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000
     gait = np.concatenate([
         gait[:,0:1],
         gait[:,1:2],
@@ -598,6 +642,7 @@ for data in data_terrain:
     
     Pc, Xc, Yc = process_data(anim, phase, gait, type=type)
 
+    # 随机选取的帧段 用于后续的地形矫正 无实际意义
     with open(data.replace('.bvh', '_footsteps.txt'), 'r') as f:
         footsteps = f.readlines()
     
