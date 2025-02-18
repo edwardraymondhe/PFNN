@@ -104,8 +104,10 @@ static Options* options = NULL;
 /* Phase-Functioned Neural Network */
 
 struct PFNN {
-  
-  enum { XDIM = 342, YDIM = 311, HDIM = 512 };
+  // TODO 3: 修改输入维度
+  // enum { XDIM = 342, YDIM = 311, HDIM = 512 };
+  enum { XDIM = 276, YDIM = 212, HDIM = 512 };
+
   enum { MODE_CONSTANT, MODE_LINEAR, MODE_CUBIC };
 
   int mode;
@@ -728,9 +730,23 @@ static Shader* shader_character_shadow = NULL;
 /* Character */
 
 struct Character {
-  
-  enum { JOINT_NUM = 31 };
-  
+  // TODO 2: 修改关节数量
+  // enum { JOINT_NUM = 31 };
+  enum { JOINT_NUM = 20 };
+  enum {
+  JOINT_ROOT_L = 1,
+  JOINT_HIP_L  = 2,
+  JOINT_KNEE_L = 3,  
+  JOINT_HEEL_L = 4,
+  JOINT_TOE_L  = 5,  
+    
+  JOINT_ROOT_R = 6,  
+  JOINT_HIP_R  = 7,  
+  JOINT_KNEE_R = 8,  
+  JOINT_HEEL_R = 9,
+  JOINT_TOE_R  = 10  
+  };
+
   GLuint vbo, tbo;
   int ntri, nvtx;
   float phase;
@@ -752,19 +768,6 @@ struct Character {
 
   int joint_parents[JOINT_NUM];
   
-  enum {
-    JOINT_ROOT_L = 1,
-    JOINT_HIP_L  = 2,
-    JOINT_KNEE_L = 3,  
-    JOINT_HEEL_L = 4,
-    JOINT_TOE_L  = 5,  
-      
-    JOINT_ROOT_R = 6,  
-    JOINT_HIP_R  = 7,  
-    JOINT_KNEE_R = 8,  
-    JOINT_HEEL_R = 9,
-    JOINT_TOE_R  = 10  
-  };
   
   Character()
     : vbo(0)
@@ -1726,7 +1729,7 @@ static void pre_render() {
   
   /* Perform IK (enter this block at your own risk...) */
   
-  if (options->enable_ik) {
+  if (false) {
     
     /* Get Weights */
     
@@ -2024,7 +2027,7 @@ void render() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_FRONT);
   
-  glUseProgram(shader_character_shadow->program);
+  // glUseProgram(shader_character_shadow->program);
   
   glUniformMatrix4fv(glGetUniformLocation(shader_character_shadow->program, "light_view"), 1, GL_FALSE, glm::value_ptr(light_view));
   glUniformMatrix4fv(glGetUniformLocation(shader_character_shadow->program, "light_proj"), 1, GL_FALSE, glm::value_ptr(light_proj));
@@ -2157,48 +2160,52 @@ void render() {
   
   /* Render Character */
   
-  glUseProgram(shader_character->program);
-  
-  glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "view"), 1, GL_FALSE, glm::value_ptr(camera->view_matrix()));
-  glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "proj"), 1, GL_FALSE, glm::value_ptr(camera->proj_matrix()));
-  glUniform3f(glGetUniformLocation(shader_character->program, "light_dir"), light_direction.x, light_direction.y, light_direction.z);
+  if (false)
+  {
+    glUseProgram(shader_character->program);
+    
+    glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "view"), 1, GL_FALSE, glm::value_ptr(camera->view_matrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "proj"), 1, GL_FALSE, glm::value_ptr(camera->proj_matrix()));
+    glUniform3f(glGetUniformLocation(shader_character->program, "light_dir"), light_direction.x, light_direction.y, light_direction.z);
 
-  glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "light_view"), 1, GL_FALSE, glm::value_ptr(light_view));
-  glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "light_proj"), 1, GL_FALSE, glm::value_ptr(light_proj));
-  
-  glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "joints"), Character::JOINT_NUM, GL_FALSE, (float*)character->joint_mesh_xform);
+    glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "light_view"), 1, GL_FALSE, glm::value_ptr(light_view));
+    glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "light_proj"), 1, GL_FALSE, glm::value_ptr(light_proj));
+    
+    glUniformMatrix4fv(glGetUniformLocation(shader_character->program, "joints"), Character::JOINT_NUM, GL_FALSE, (float*)character->joint_mesh_xform);
 
-  glActiveTexture(GL_TEXTURE0 + 0);
-  glBindTexture(GL_TEXTURE_2D, light->tex);
-  glUniform1i(glGetUniformLocation(shader_character->program, "shadows"), 0);
-  
-  glBindBuffer(GL_ARRAY_BUFFER, character->vbo);
-  
-  glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vPosition"));  
-  glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vNormal"));
-  glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vAO"));
-  glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightVal"));
-  glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightIds"));
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, light->tex);
+    glUniform1i(glGetUniformLocation(shader_character->program, "shadows"), 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, character->vbo);
+    
+    glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vPosition"));  
+    glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vNormal"));
+    glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vAO"));
+    glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightVal"));
+    glEnableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightIds"));
 
-  glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vPosition"),  3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  0));
-  glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vNormal"),    3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  3));
-  glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vAO"),        1, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  6));
-  glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vWeightVal"), 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  7));
-  glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vWeightIds"), 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) * 11));
-  
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, character->tbo);
-  glDrawElements(GL_TRIANGLES, character->ntri, GL_UNSIGNED_INT, (void*)0);
-  
-  glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vPosition"));  
-  glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vNormal"));  
-  glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vAO"));  
-  glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightVal"));
-  glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightIds"));
+    glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vPosition"),  3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  0));
+    glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vNormal"),    3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  3));
+    glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vAO"),        1, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  6));
+    glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vWeightVal"), 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) *  7));
+    glVertexAttribPointer(glGetAttribLocation(shader_character->program, "vWeightIds"), 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (void*)(sizeof(float) * 11));
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, character->tbo);
+    glDrawElements(GL_TRIANGLES, character->ntri, GL_UNSIGNED_INT, (void*)0);
+    
+    glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vPosition"));  
+    glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vNormal"));  
+    glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vAO"));  
+    glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightVal"));
+    glDisableVertexAttribArray(glGetAttribLocation(shader_character->program, "vWeightIds"));
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  
-  glUseProgram(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glUseProgram(0);
+  }
+
   
   /* Render the Rest */
   
@@ -2365,20 +2372,25 @@ void render() {
   
   /* Render Joints */
   
-  if (options->display_debug && options->display_debug_joints) {
+  // if (options->display_debug && options->display_debug_joints) {
+  if (true) {
     glDisable(GL_DEPTH_TEST);
-    glPointSize(3.0 * options->display_scale);
+    // glPointSize(3.0 * options->display_scale);
+    glPointSize(4.0 * options->display_scale);
     glColor3f(0.6, 0.3, 0.4);      
     glBegin(GL_POINTS);
     for (int i = 0; i < Character::JOINT_NUM; i++) {
       glm::vec3 pos = character->joint_positions[i];
+      printf("%d: %f, %f, %f\n", i, pos.x, pos.y, pos.z);
       glVertex3f(pos.x, pos.y, pos.z);
     }
+    printf("--------------------------------\n");
     glEnd();
     glPointSize(1.0);
 
     glLineWidth(1.0 * options->display_scale);
-    glColor3f(0.6, 0.3, 0.4);      
+    // glColor3f(0.6, 0.3, 0.4);      
+    glColor3f(0.94, 0.525, 0.313);      
     glBegin(GL_LINES);
     for (int i = 0; i < Character::JOINT_NUM; i++) {
       glm::vec3 pos = character->joint_positions[i];

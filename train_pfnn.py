@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import theano
 import theano.tensor as T
-from skeletondef import Original as skd
+from skeletondef import Choose as skd
 theano.config.allow_gc = True
 
 sys.path.append('./nn')
@@ -18,7 +18,7 @@ rng = np.random.RandomState(23456)
 
 """ Load Data """
 
-database = np.load('database.npz')
+database = np.load(skd.DATABASE_NAME)
 X = database['Xun'].astype(theano.config.floatX)
 Y = database['Yun'].astype(theano.config.floatX)
 P = database['Pun'].astype(theano.config.floatX)
@@ -31,7 +31,7 @@ Xmean, Xstd = X.mean(axis=0), X.std(axis=0)
 Ymean, Ystd = Y.mean(axis=0), Y.std(axis=0)
 
 j = skd.JOINT_NUM
-w = ((60*2)//10)
+w = ((skd.WINDOW*2)//10)
 
 Xstd[w*0:w* 1] = Xstd[w*0:w* 1].mean() # Trajectory Past Positions
 Xstd[w*1:w* 2] = Xstd[w*1:w* 2].mean() # Trajectory Future Positions
@@ -76,6 +76,8 @@ Y = (Y - Ymean) / Ystd
 class PhaseFunctionedNetwork(Layer):
     
     def __init__(self, rng=rng, input_shape=1, output_shape=1, dropout=0.7):
+        
+        print(f"PhaseFunctionedNetwork: {input_shape-1}, {output_shape}")
         
         self.nslices = 4        
         self.dropout0 = DropoutLayer(dropout, rng=rng)

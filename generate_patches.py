@@ -4,6 +4,8 @@ import numpy as np
 import scipy.ndimage as ndimage
 import scipy.misc as misc
 
+from skeletondef import Choose as skd 
+
 np.random.seed(2)
 
 """ Options """
@@ -78,4 +80,4 @@ C = np.array(C).astype(np.float32)
 
 print(X.shape, C.shape)
 
-np.savez_compressed('patches.npz', X=X, C=C)
+np.savez_compressed(skd.PATCHES_NAME, X=X, C=C)

@@ -8,7 +8,9 @@ import os
 import numpy as np
 import scipy.interpolate as interpolate
 import scipy.ndimage.filters as filters
-from skeletondef import Games as skd
+from skeletondef import Choose as skd
+from skeletondef import Games
+from skeletondef import Original
 
 sys.path.append('./motion')
 
@@ -26,94 +28,97 @@ rfoot = skd.FOOT_R[0]
 rtoe = skd.FOOT_R[1]
 
 data_terrain = [
-    './data/animations/LocomotionFlat01_000.bvh',
-    './data/animations/LocomotionFlat02_000.bvh',
-    './data/animations/LocomotionFlat02_001.bvh',
-    './data/animations/LocomotionFlat03_000.bvh',
-    './data/animations/LocomotionFlat04_000.bvh',
-    './data/animations/LocomotionFlat05_000.bvh',
-    './data/animations/LocomotionFlat06_000.bvh',
-    './data/animations/LocomotionFlat06_001.bvh',
-    './data/animations/LocomotionFlat07_000.bvh',
-    './data/animations/LocomotionFlat08_000.bvh',
-    './data/animations/LocomotionFlat08_001.bvh',
-    './data/animations/LocomotionFlat09_000.bvh',
-    './data/animations/LocomotionFlat10_000.bvh',
-    './data/animations/LocomotionFlat11_000.bvh',
-    './data/animations/LocomotionFlat12_000.bvh',
+        './data/animations/LocomotionFlat01_000.bvh',
+        './data/animations/LocomotionFlat02_000.bvh',
+        './data/animations/LocomotionFlat02_001.bvh',
+        './data/animations/LocomotionFlat03_000.bvh',
+        './data/animations/LocomotionFlat04_000.bvh',
+        './data/animations/LocomotionFlat05_000.bvh',
+        './data/animations/LocomotionFlat06_000.bvh',
+        './data/animations/LocomotionFlat06_001.bvh',
+        './data/animations/LocomotionFlat07_000.bvh',
+        './data/animations/LocomotionFlat08_000.bvh',
+        './data/animations/LocomotionFlat08_001.bvh',
+        './data/animations/LocomotionFlat09_000.bvh',
+        './data/animations/LocomotionFlat10_000.bvh',
+        './data/animations/LocomotionFlat11_000.bvh',
+        './data/animations/LocomotionFlat12_000.bvh',
 
-    './data/animations/LocomotionFlat01_000_mirror.bvh',
-    './data/animations/LocomotionFlat02_000_mirror.bvh',
-    './data/animations/LocomotionFlat02_001_mirror.bvh',
-    './data/animations/LocomotionFlat03_000_mirror.bvh',
-    './data/animations/LocomotionFlat04_000_mirror.bvh',
-    './data/animations/LocomotionFlat05_000_mirror.bvh',
-    './data/animations/LocomotionFlat06_000_mirror.bvh',
-    './data/animations/LocomotionFlat06_001_mirror.bvh',
-    './data/animations/LocomotionFlat07_000_mirror.bvh',
-    './data/animations/LocomotionFlat08_000_mirror.bvh',
-    './data/animations/LocomotionFlat08_001_mirror.bvh',
-    './data/animations/LocomotionFlat09_000_mirror.bvh',
-    './data/animations/LocomotionFlat10_000_mirror.bvh',
-    './data/animations/LocomotionFlat11_000_mirror.bvh',
-    './data/animations/LocomotionFlat12_000_mirror.bvh',
+        './data/animations/LocomotionFlat01_000_mirror.bvh',
+        './data/animations/LocomotionFlat02_000_mirror.bvh',
+        './data/animations/LocomotionFlat02_001_mirror.bvh',
+        './data/animations/LocomotionFlat03_000_mirror.bvh',
+        './data/animations/LocomotionFlat04_000_mirror.bvh',
+        './data/animations/LocomotionFlat05_000_mirror.bvh',
+        './data/animations/LocomotionFlat06_000_mirror.bvh',
+        './data/animations/LocomotionFlat06_001_mirror.bvh',
+        './data/animations/LocomotionFlat07_000_mirror.bvh',
+        './data/animations/LocomotionFlat08_000_mirror.bvh',
+        './data/animations/LocomotionFlat08_001_mirror.bvh',
+        './data/animations/LocomotionFlat09_000_mirror.bvh',
+        './data/animations/LocomotionFlat10_000_mirror.bvh',
+        './data/animations/LocomotionFlat11_000_mirror.bvh',
+        './data/animations/LocomotionFlat12_000_mirror.bvh',
 
-    './data/animations/WalkingUpSteps01_000.bvh',
-    './data/animations/WalkingUpSteps02_000.bvh',
-    './data/animations/WalkingUpSteps03_000.bvh',
-    './data/animations/WalkingUpSteps04_000.bvh',
-    './data/animations/WalkingUpSteps04_001.bvh',
-    './data/animations/WalkingUpSteps05_000.bvh',
-    './data/animations/WalkingUpSteps06_000.bvh',
-    './data/animations/WalkingUpSteps07_000.bvh',
-    './data/animations/WalkingUpSteps08_000.bvh',
-    './data/animations/WalkingUpSteps09_000.bvh',
-    './data/animations/WalkingUpSteps10_000.bvh',
-    './data/animations/WalkingUpSteps11_000.bvh',
-    './data/animations/WalkingUpSteps12_000.bvh',
+        './data/animations/WalkingUpSteps01_000.bvh',
+        './data/animations/WalkingUpSteps02_000.bvh',
+        './data/animations/WalkingUpSteps03_000.bvh',
+        './data/animations/WalkingUpSteps04_000.bvh',
+        './data/animations/WalkingUpSteps04_001.bvh',
+        './data/animations/WalkingUpSteps05_000.bvh',
+        './data/animations/WalkingUpSteps06_000.bvh',
+        './data/animations/WalkingUpSteps07_000.bvh',
+        './data/animations/WalkingUpSteps08_000.bvh',
+        './data/animations/WalkingUpSteps09_000.bvh',
+        './data/animations/WalkingUpSteps10_000.bvh',
+        './data/animations/WalkingUpSteps11_000.bvh',
+        './data/animations/WalkingUpSteps12_000.bvh',
 
-    './data/animations/WalkingUpSteps01_000_mirror.bvh',
-    './data/animations/WalkingUpSteps02_000_mirror.bvh',
-    './data/animations/WalkingUpSteps03_000_mirror.bvh',
-    './data/animations/WalkingUpSteps04_000_mirror.bvh',
-    './data/animations/WalkingUpSteps04_001_mirror.bvh',
-    './data/animations/WalkingUpSteps05_000_mirror.bvh',
-    './data/animations/WalkingUpSteps06_000_mirror.bvh',
-    './data/animations/WalkingUpSteps07_000_mirror.bvh',
-    './data/animations/WalkingUpSteps08_000_mirror.bvh',
-    './data/animations/WalkingUpSteps09_000_mirror.bvh',
-    './data/animations/WalkingUpSteps10_000_mirror.bvh',
-    './data/animations/WalkingUpSteps11_000_mirror.bvh',
-    './data/animations/WalkingUpSteps12_000_mirror.bvh',
+        './data/animations/WalkingUpSteps01_000_mirror.bvh',
+        './data/animations/WalkingUpSteps02_000_mirror.bvh',
+        './data/animations/WalkingUpSteps03_000_mirror.bvh',
+        './data/animations/WalkingUpSteps04_000_mirror.bvh',
+        './data/animations/WalkingUpSteps04_001_mirror.bvh',
+        './data/animations/WalkingUpSteps05_000_mirror.bvh',
+        './data/animations/WalkingUpSteps06_000_mirror.bvh',
+        './data/animations/WalkingUpSteps07_000_mirror.bvh',
+        './data/animations/WalkingUpSteps08_000_mirror.bvh',
+        './data/animations/WalkingUpSteps09_000_mirror.bvh',
+        './data/animations/WalkingUpSteps10_000_mirror.bvh',
+        './data/animations/WalkingUpSteps11_000_mirror.bvh',
+        './data/animations/WalkingUpSteps12_000_mirror.bvh',
 
-    './data/animations/NewCaptures01_000.bvh',
-    './data/animations/NewCaptures02_000.bvh',
-    './data/animations/NewCaptures03_000.bvh',
-    './data/animations/NewCaptures03_001.bvh',
-    './data/animations/NewCaptures03_002.bvh',
-    './data/animations/NewCaptures04_000.bvh',
-    './data/animations/NewCaptures05_000.bvh',
-    './data/animations/NewCaptures07_000.bvh',
-    './data/animations/NewCaptures08_000.bvh',
-    './data/animations/NewCaptures09_000.bvh',
-    './data/animations/NewCaptures10_000.bvh',
-    './data/animations/NewCaptures11_000.bvh',
+        './data/animations/NewCaptures01_000.bvh',
+        './data/animations/NewCaptures02_000.bvh',
+        './data/animations/NewCaptures03_000.bvh',
+        './data/animations/NewCaptures03_001.bvh',
+        './data/animations/NewCaptures03_002.bvh',
+        './data/animations/NewCaptures04_000.bvh',
+        './data/animations/NewCaptures05_000.bvh',
+        './data/animations/NewCaptures07_000.bvh',
+        './data/animations/NewCaptures08_000.bvh',
+        './data/animations/NewCaptures09_000.bvh',
+        './data/animations/NewCaptures10_000.bvh',
+        './data/animations/NewCaptures11_000.bvh',
 
-    './data/animations/NewCaptures01_000_mirror.bvh',
-    './data/animations/NewCaptures02_000_mirror.bvh',
-    './data/animations/NewCaptures03_000_mirror.bvh',
-    './data/animations/NewCaptures03_001_mirror.bvh',
-    './data/animations/NewCaptures03_002_mirror.bvh',
-    './data/animations/NewCaptures04_000_mirror.bvh',
-    './data/animations/NewCaptures05_000_mirror.bvh',
-    './data/animations/NewCaptures07_000_mirror.bvh',
-    './data/animations/NewCaptures08_000_mirror.bvh',
-    './data/animations/NewCaptures09_000_mirror.bvh',
-    './data/animations/NewCaptures10_000_mirror.bvh',
-    './data/animations/NewCaptures11_000_mirror.bvh',
-]
+        './data/animations/NewCaptures01_000_mirror.bvh',
+        './data/animations/NewCaptures02_000_mirror.bvh',
+        './data/animations/NewCaptures03_000_mirror.bvh',
+        './data/animations/NewCaptures03_001_mirror.bvh',
+        './data/animations/NewCaptures03_002_mirror.bvh',
+        './data/animations/NewCaptures04_000_mirror.bvh',
+        './data/animations/NewCaptures05_000_mirror.bvh',
+        './data/animations/NewCaptures07_000_mirror.bvh',
+        './data/animations/NewCaptures08_000_mirror.bvh',
+        './data/animations/NewCaptures09_000_mirror.bvh',
+        './data/animations/NewCaptures10_000_mirror.bvh',
+        './data/animations/NewCaptures11_000_mirror.bvh',
+    ]
 
-data_terrain = ['./data/reference/walkF.bvh']
+if skd == Original:
+    data_terrain = ['./data/animations/LocomotionFlat01_000.bvh']
+else:
+    data_terrain = [f'./data/reference/{skd.FILE_NAME}.bvh']
 
 for data in data_terrain:
 
@@ -124,15 +129,17 @@ for data in data_terrain:
     """ Load Data """
     
     anim, names, _ = BVH.load(data)
-    print(len(anim.parents), len(names))
     d = dict()
     for i in range(len(anim.parents)):
         if anim.parents[i] not in d:
             d[anim.parents[i]] = []
         d[anim.parents[i]].append(i)
-     
-    for key in d:
-        print(f"{names[key]} ->\n{[names[i] for i in d[key]]}")
+
+    # print(len(anim.parents), len(names))
+    # for key in d:
+    #     print(f"{names[key]} ->\n{[names[i] for i in d[key]]}")
+    # print(lfoot, ltoe, rfoot, rtoe)
+    # print(names[lfoot], names[ltoe], names[rfoot], names[rtoe])
   
     anim.offsets *= to_meters
     anim.positions *= to_meters
@@ -167,6 +174,7 @@ for data in data_terrain:
     for i in range(AVG_RANGE, tlen-AVG_RANGE-1, 1):
         # ORIGINAL
   
+        # TODO 4: 修改阈值
         #ACC_EPSILON = 0
         ACC_EPSILON = 0.175
         #ACC_EPSILON = 0.006
@@ -181,16 +189,18 @@ for data in data_terrain:
         # RTOE_SPEED_EPSILON = avg_rts * 0.285
   
   
-        ACC_EPSILON = 0.006
-        MULTIPLIER = 1
-        LHEEL_SPEED_EPSILON = 0.375
-        RHEEL_SPEED_EPSILON = 0.375
-        LTOE_SPEED_EPSILON = 0.0875
-        RTOE_SPEED_EPSILON = 0.0875
-        # LHEEL_SPEED_EPSILON = avg_lfs * 0.285
-        # RHEEL_SPEED_EPSILON = avg_rfs * 0.285
-        # LTOE_SPEED_EPSILON = avg_lts * 0.285
-        # RTOE_SPEED_EPSILON = avg_rts * 0.285
+        # ACC_EPSILON = 0.03
+        # MULTIPLIER = 10.5
+        # TEST1 = 0.066
+        # TEST2 = 0.0155
+        # LHEEL_SPEED_EPSILON = TEST1
+        # RHEEL_SPEED_EPSILON = TEST1
+        # LTOE_SPEED_EPSILON = TEST2
+        # RTOE_SPEED_EPSILON = TEST2
+        # # LHEEL_SPEED_EPSILON = avg_lfs * 0.285
+        # # RHEEL_SPEED_EPSILON = avg_rfs * 0.285
+        # # LTOE_SPEED_EPSILON = avg_lts * 0.285
+        # # RTOE_SPEED_EPSILON = avg_rts * 0.285
 
         LFS = np.linalg.norm(global_positions[i,lfoot] - global_positions[i-1,lfoot]) # left foot
         LTS = np.linalg.norm(global_positions[i,ltoe] - global_positions[i-1,ltoe]) # left toe	
@@ -235,7 +245,8 @@ for data in data_terrain:
             dLTS = NEW_LTS - LTS
             dOLD_LFS = LFS - OLD_LFS
             dOLD_LTS = LTS - OLD_LTS
-            print("Left delta: ",dLFS, dLTS)
+            # print(f"Left Speed, Foot: {LFS} & {LHEEL_SPEED_EPSILON}, Toe: {LTS} & {LTOE_SPEED_EPSILON}")
+            # print(f"Left Delta, Foot: {dLFS}, Toe: {dLTS}")
         
             if(LFS < LHEEL_SPEED_EPSILON and LTS < LTOE_SPEED_EPSILON \
             or ((LFS < LHEEL_SPEED_EPSILON*MULTIPLIER and LTS < LTOE_SPEED_EPSILON*MULTIPLIER) and ((dLFS >= ACC_EPSILON and dOLD_LFS <= -ACC_EPSILON) or (dLTS >= ACC_EPSILON and dOLD_LTS < -ACC_EPSILON))) ):
@@ -296,7 +307,10 @@ for data in data_terrain:
     f.close()
     
     f = open(data.replace('.bvh','.phase'), 'w')
-    print(footsteps)
+    
+    if skd == Games:
+        print(footsteps)
+        
     for i in range(0, footsteps[0]):
         f.writelines("%f\n" % float(0) )
         

@@ -4,7 +4,9 @@ import numpy as np
 import scipy.interpolate as interpolate
 import scipy.ndimage.filters as filters
 
-from skeletondef import Games as skd
+from skeletondef import Choose as skd
+from skeletondef import Games
+from skeletondef import Original
 
 sys.path.append('./motion')
 
@@ -18,7 +20,7 @@ from Learning import RBF
 
 rng = np.random.RandomState(1234)
 to_meters = skd.JOINT_SCALE
-window = 60
+window = skd.WINDOW
 njoints = skd.JOINT_NUM
 prev_rotations = None
 
@@ -112,12 +114,12 @@ data_terrain = [
     './data/animations/NewCaptures11_000_mirror.bvh',
 ]
 
-data_terrain = ['./data/animations/LocomotionFlat01_000.bvh']
+if skd == Original:
+    data_terrain = ['./data/animations/LocomotionFlat01_000.bvh']
+else:
+    data_terrain = [f'./data/reference/{skd.FILE_NAME}.bvh']
 
-data_terrain = ['./data/reference/walkF.bvh']
-
-# database_name = 'database.npz'
-database_name = 'database_games.npz'
+database_name = skd.DATABASE_NAME
 
 """ filter out joints """
 def filter_joints(anim, names):
@@ -174,7 +176,7 @@ def filter_joints(anim, names):
 
 """ Load Terrain Patches """
 
-patches_database = np.load('patches.npz')
+patches_database = np.load(skd.PATCHES_NAME)
 patches = patches_database['X'].astype(np.float32)
 patches_coord = patches_database['C'].astype(np.float32)
 
@@ -270,11 +272,11 @@ def process_data(anim, phase, gait, type='flat'):
     
     """ Adjust Crouching Gait Value """
     
-    if type == 'flat':
-        crouch_low, crouch_high = 80, 130
-        head = skd.HEAD
-        gait[:-1,3] = 1 - np.clip((global_positions[:-1,head,1] - 80) / (130 - 80), 0, 1)
-        gait[-1,3] = gait[-2,3]
+    # if type == 'flat':
+    #     crouch_low, crouch_high = 80, 130
+    #     head = skd.HEAD
+    #     gait[:-1,3] = 1 - np.clip((global_positions[:-1,head,1] - 80) / (130 - 80), 0, 1)
+    #     gait[-1,3] = gait[-2,3]
         
     """ Load prev rotations across files (poles maybe adjusted) """
     global prev_rotations
@@ -598,12 +600,24 @@ for data in data_terrain:
     elif 'WalkingUpSteps10_000' in data: type = 'flat'
     elif 'WalkingUpSteps11_000' in data: type = 'flat'
     elif 'Flat' in data: type = 'flat'
+    elif 'walk' in data: type = 'flat'
     else: type = 'rocky'
     
     """ Load Data """
     
     anim, names, _ = BVH.load(data)
     anim2, names2 = filter_joints(anim, names)
+    
+    # print(names)
+    # print(names2)
+    # d = dict()
+    # for i in range(len(anim.parents)):
+    #     if anim.parents[i] not in d:
+    #         d[anim.parents[i]] = []
+    #     d[anim.parents[i]].append(i)
+    # print(len(anim.parents), len(names))
+    # for key in d:
+    #     print(f"{names[key]} ->\n{[names[i] for i in d[key]]}")
     
     """ Dump joint lists"""
     #BVH.save("stripped.bvh", anim, names, 1.0/120.0, 'zyx', True, True)
@@ -651,12 +665,15 @@ for data in data_terrain:
     # 随机选取的帧段 用于后续的地形矫正 无实际意义
     with open(data.replace('.bvh', '_footsteps.txt'), 'r') as f:
         footsteps = f.readlines()
+        
+    # print(f"Footsteps: {footsteps} Length: {len(footsteps)-1}")
     
     """ For each Locomotion Cycle fit Terrains """
     
     for li in range(len(footsteps)-1):
     
         curr, next = footsteps[li+0].split(' '), footsteps[li+1].split(' ')
+        # print(f"Curr: {curr}, Next: {next}, Window:{window}")
         
         """ Ignore Cycles marked with '*' or not in range """
         
@@ -672,6 +689,8 @@ for data in data_terrain:
         H, Hmean = process_heights(anim[
             int(curr[0])//2-window:
             int(next[0])//2+window+1], type=type)
+        
+        # print(H, Hmean)
 
         for h, hmean in zip(H, Hmean):
             
