@@ -1426,9 +1426,11 @@ static void load_world5(void) {
 static void pre_render() {
         
   /* Update Camera */
-  /*
-  int x_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_HORIZONTAL);
-  int y_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_VERTICAL);
+  int y_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_HORIZONTAL);
+  int x_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_VERTICAL);
+  x_move = -x_move;
+  y_move = 0;
+  // printf("Stick-R: %d, %d\n", x_move, y_move);
   
   if (abs(x_move) + abs(y_move) < 10000) { x_move = 0; y_move = 0; };
   
@@ -1442,7 +1444,6 @@ static void pre_render() {
   
   if (zoom_i > 1e-5) { camera->distance = glm::clamp(camera->distance + zoom_i, 10.0f, 10000.0f); }
   if (zoom_o > 1e-5) { camera->distance = glm::clamp(camera->distance - zoom_o, 10.0f, 10000.0f); }
-  */
         
   /* Update Target Direction / Velocity */
     

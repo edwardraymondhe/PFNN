@@ -16,7 +16,6 @@ ifeq ($(findstring MINGW,$(PLATFORM)),MINGW)
 endif
 
 pfnn: pfnn.cpp
-	g++ -std=gnu++11 -Wall -O3 -ffast-math $< $(LFLAGS) -g -o $@
 	g++ -DHIGH_QUALITY -std=gnu++11 -Wall -O3 -ffast-math $< $(LFLAGS) -g -o $@_hq
   
 clean: pfnn$(EXT)

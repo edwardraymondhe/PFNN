@@ -1,7 +1,4 @@
 #!/bin/bash
-# conda init
-# conda activate games105
-
 cd ./demo
 make
 cd ../
