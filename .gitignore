@@ -1,2 +1,5 @@
+/backup
+/data/animations
+/demo/network/pfnn
+
 *.pyc
-backup
