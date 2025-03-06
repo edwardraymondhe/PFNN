@@ -3,12 +3,16 @@ import theano
 import theano.tensor as T
 from skeletondef import Choose as skd
 
+import sys
+sys.path.append('/home/rootai/Desktop/Code/main/pfnn-py-repo/nn')
 import math
-from .nn import Layer
-from .nn import HiddenLayer
-from .nn import BiasLayer
-from .nn import DropoutLayer
-from .nn import ActivationLayer
+
+from Layer import Layer
+from HiddenLayer import HiddenLayer
+from BiasLayer import BiasLayer
+from DropoutLayer import DropoutLayer
+from ActivationLayer import ActivationLayer
+from AdamTrainer import AdamTrainer
 
 pfnn_dir = '/home/rootai/Desktop/Code/main/pfnn-py-repo/demo/network/pfnn'
 
