@@ -139,10 +139,45 @@ class Games:
     18                JOINT lAnkle
     19                    JOINT lToeJoint
     """
+    
+    """
+    0    ROOT RootJoint
+    1    JOINT pelvis_lowerback
+    2        JOINT lowerback_torso
+    3            JOINT torso_head
+    4                End Site
+    5            JOINT rTorso_Clavicle
+    6                JOINT rShoulder
+    7                    JOINT rElbow
+    8                        JOINT rWrist
+    9                            End Site
+    10           JOINT lTorso_Clavicle
+    11               JOINT lShoulder
+    12                   JOINT lElbow
+    13                       JOINT lWrist
+    14                           End Site
+    15   JOINT rHip
+    16       JOINT rKnee
+    17           JOINT rAnkle
+    18               JOINT rToeJoint
+    19                   End Site
+    20   JOINT lHip
+    21       JOINT lKnee
+    22           JOINT lAnkle
+    23               JOINT lToeJoint
+    24                   End Site
+    """
+    
     SDR_L, SDR_R, HIP_L, HIP_R = 9, 5, 16, 12
     FOOT_L = [18,19]
     FOOT_R = [14,15]
     HEAD = 3
+    
+    SDR_L_o, SDR_R_o, HIP_L_o, HIP_R_o = 11, 6, 20, 15
+    FOOT_L_o = [22,23]
+    FOOT_R_o = [17,18]
+    HEAD_o = 3
+    
     WINDOW = 60
     FILE_NAME = 'long_walk'
     

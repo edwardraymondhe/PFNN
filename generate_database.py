@@ -299,7 +299,7 @@ def process_data(anim, phase, gait, type='flat'):
         # 减去 第i帧的数据
         # 如果window = 60, 则window * 2 = 120, 120 / 10 = 12帧
         rootposs = root_rotation[i:i+1,0] * (global_positions[i-window:i+window:10,0] - global_positions[i:i+1,0])
-        rootdirs = root_rotation[i:i+1,0] * forward[i-window:i+window:10]    
+        rootdirs = root_rotation[i:i+1,0] * forward[i-window:i+window:10]
         rootgait = gait[i-window:i+window:10]
         
         # 第一帧下标是 Window

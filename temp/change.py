@@ -11,21 +11,37 @@ print(len(test))
 
 
 # 生成87行数据，第一列和第二列互补，其他列为0，输出5位小数
-rows = 1700
-end_change = 87
+rows = 4000
+
+stands = [[0, 159]]
+transitions = [[160, 192]]
+runs = [[193, 3999]]
 data = []
 
 for i in range(rows):
-    if i < end_change:
-        first_col = format(1 - (i / (rows - 1)), '.5f')  # 第一列从1到0，格式化为5位小数
-        second_col = format(i / (rows - 1), '.5f')        # 第二列从0到1，格式化为5位小数
-        other_cols = ['0.00000'] * 6                        # 其他6列为0，格式化为5位小数
-    else:
-        first_col = '0.00000'           # 第一列从1到0，格式化为5位小数
-        second_col = '1.00000'          # 第二列从0到1，格式化为5位小数
-        other_cols = ['0.00000'] * 6                        # 其他6列为0，格式化为5位小数
-        data.append([first_col, second_col] + other_cols)
-    data.append([first_col, second_col] + other_cols)
+    for stand in stands:
+        if i >= stand[0] and i <= stand[1]:
+            x = (i - stand[0]) / (stand[1] - stand[0])
+            stand_col = '1.00000'  # 第一列从1到0，格式化为5位小数
+            run_col = '0.00000'        # 第二列从0到1，格式化为5位小数
+            other_cols = ['0.00000'] * 6                        # 其他6列为0，格式化为5位小数
+            break
+    for run in runs:
+        if i >= run[0] and i <= run[1]:
+            x = (i - run[0]) / (run[1] - run[0])
+            stand_col = '0.00000'  # 第一列从1到0，格式化为5位小数
+            run_col = '1.00000'        # 第二列从0到1，格式化为5位小数
+            other_cols = ['0.00000'] * 6                        # 其他6列为0，格式化为5位小数
+            break    
+    for transition in transitions:
+        if i >= transition[0] and i <= transition[1]:
+            x = (i - transition[0]) / (transition[1] - transition[0])
+            stand_col = format(1 - x, '.5f')  # 第一列从1到0，格式化为5位小数
+            run_col = format(x, '.5f')        # 第二列从0到1，格式化为5位小数
+            other_cols = ['0.00000'] * 6                        # 其他6列为0，格式化为5位小数
+            break
+
+    data.append([stand_col, run_col] + other_cols)
 
 # 输出结果到txt文件
 with open('output.txt', 'w') as f:
