@@ -1,12 +1,13 @@
 import numpy as np
 import theano
 import theano.tensor as T
-from skeletondef import Choose as skd
 
+import math
 import sys
 sys.path.append('/home/rootai/Desktop/Code/main/pfnn-py-repo/nn')
-import math
+sys.path.append('/home/rootai/Desktop/Code/main/pfnn-py-repo')
 
+from skeletondef import Choose as skd
 from Layer import Layer
 from HiddenLayer import HiddenLayer
 from BiasLayer import BiasLayer
@@ -125,6 +126,27 @@ class PhaseFunctionedNetwork(Layer):
         self.b1 = []
         self.b2 = []
         
+        # # Binary files
+        # for i in range(50):
+        #     self.W0.append(np.fromfile(f'{pfnn_dir}/W0_{i:03d}.bin', dtype=np.float32))
+        #     self.W1.append(np.fromfile(f'{pfnn_dir}/W1_{i:03d}.bin', dtype=np.float32))
+        #     self.W2.append(np.fromfile(f'{pfnn_dir}/W2_{i:03d}.bin', dtype=np.float32))
+        #     self.b0.append(np.fromfile(f'{pfnn_dir}/b0_{i:03d}.bin', dtype=np.float32))
+        #     self.b1.append(np.fromfile(f'{pfnn_dir}/b1_{i:03d}.bin', dtype=np.float32))
+        #     self.b2.append(np.fromfile(f'{pfnn_dir}/b2_{i:03d}.bin', dtype=np.float32))
+        # # 重塑权重矩阵
+        # input_dim = self.W0[0].size // 512
+        # output_dim = self.W2[0].size // 512
+        # print("input_dim: ", input_dim, "output_dim: ", output_dim)
+        # for i in range(50):
+        #     self.W0[i] = self.W0[i].reshape(512, input_dim)
+        #     self.W1[i] = self.W1[i].reshape(512, 512)
+        #     self.W2[i] = self.W2[i].reshape(output_dim, 512)
+        #     self.b0[i] = self.b0[i].reshape(512)
+        #     self.b1[i] = self.b1[i].reshape(512)
+        #     self.b2[i] = self.b2[i].reshape(output_dim)
+        
+        # Npy files
         for i in range(50):
             self.W0.append(np.load(f'{pfnn_dir}/W0_{i:03d}.npy'))
             self.W1.append(np.load(f'{pfnn_dir}/W1_{i:03d}.npy'))
@@ -176,13 +198,13 @@ class PhaseFunctionedNetwork(Layer):
             b1 = cubic(b1n[pindex_0], b1n[pindex_1], b1n[pindex_2], b1n[pindex_3], pamount)
             b2 = cubic(b2n[pindex_0], b2n[pindex_1], b2n[pindex_2], b2n[pindex_3], pamount)
             
-            # # Binary files
-            # W0.astype(np.float32).tofile(f'{pfnn_dir}/W0_{i:03d}.bin')
-            # W1.astype(np.float32).tofile(f'{pfnn_dir}/W1_{i:03d}.bin')
-            # W2.astype(np.float32).tofile(f'{pfnn_dir}/W2_{i:03d}.bin')
-            # b0.astype(np.float32).tofile(f'{pfnn_dir}/b0_{i:03d}.bin')
-            # b1.astype(np.float32).tofile(f'{pfnn_dir}/b1_{i:03d}.bin')
-            # b2.astype(np.float32).tofile(f'{pfnn_dir}/b2_{i:03d}.bin')
+            # Binary files
+            W0.astype(np.float32).tofile(f'{pfnn_dir}/W0_{i:03d}.bin')
+            W1.astype(np.float32).tofile(f'{pfnn_dir}/W1_{i:03d}.bin')
+            W2.astype(np.float32).tofile(f'{pfnn_dir}/W2_{i:03d}.bin')
+            b0.astype(np.float32).tofile(f'{pfnn_dir}/b0_{i:03d}.bin')
+            b1.astype(np.float32).tofile(f'{pfnn_dir}/b1_{i:03d}.bin')
+            b2.astype(np.float32).tofile(f'{pfnn_dir}/b2_{i:03d}.bin')
             
             # Npy files
             # Saving to npy files without converting data type will not have errors when writing and reading
