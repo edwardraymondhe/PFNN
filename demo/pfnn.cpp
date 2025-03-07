@@ -1424,6 +1424,7 @@ static void load_world5(void) {
 }
 
 static void pre_render() {
+  printf("--------------------------------\n");
         
   /* Update Camera */
   int y_move = SDL_JoystickGetAxis(stick, GAMEPAD_STICK_R_HORIZONTAL);
@@ -1615,7 +1616,9 @@ static void pre_render() {
   for (int i = 0; i < Trajectory::LENGTH; i+=10) {
     int w = (Trajectory::LENGTH)/10;
     glm::vec3 pos = glm::inverse(root_rotation) * (trajectory->positions[i] - root_position);
-    glm::vec3 dir = glm::inverse(root_rotation) * trajectory->directions[i];  
+    glm::vec3 dir = glm::inverse(root_rotation) * trajectory->directions[i];
+    printf("Trajectory-%d Pos: %f, %f, %f\n", i, pos.x, pos.y, pos.z);
+    printf("Trajectory-%d Dir: %f, %f, %f\n", i, dir.x, dir.y, dir.z);
     pfnn->Xp((w*0)+i/10) = pos.x; pfnn->Xp((w*1)+i/10) = pos.z;
     pfnn->Xp((w*2)+i/10) = dir.x; pfnn->Xp((w*3)+i/10) = dir.z;
   }
@@ -1657,10 +1660,18 @@ static void pre_render() {
     int w = (Trajectory::LENGTH)/10;
     glm::vec3 position_r = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3( trajectory->width, 0, 0));
     glm::vec3 position_l = trajectory->positions[i] + (trajectory->rotations[i] * glm::vec3(-trajectory->width, 0, 0));
-    pfnn->Xp(o+(w*0)+(i/10)) = heightmap->sample(glm::vec2(position_r.x, position_r.z)) - root_position.y;
-    pfnn->Xp(o+(w*1)+(i/10)) = trajectory->positions[i].y - root_position.y;
-    pfnn->Xp(o+(w*2)+(i/10)) = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
+    
+    float temp_x = heightmap->sample(glm::vec2(position_r.x, position_r.z)) - root_position.y;
+    float temp_y = trajectory->positions[i].y - root_position.y;
+    float temp_z = heightmap->sample(glm::vec2(position_l.x, position_l.z)) - root_position.y;
+    pfnn->Xp(o+(w*0)+(i/10)) = temp_x;
+    pfnn->Xp(o+(w*1)+(i/10)) = temp_y;
+    pfnn->Xp(o+(w*2)+(i/10)) = temp_z;
+    // printf("Trajectory-%d: %f, %f, %f\n", i, temp_x, temp_y, temp_z);
   }
+
+  // printf("Trajectory height: %0.5f\n", trajectory->positions[0].y);
+  // printf("Root height: %0.5f\n", root_position.y);
     
   /* Perform Regression 网络预测 */
   
@@ -2382,10 +2393,11 @@ void render() {
     glBegin(GL_POINTS);
     for (int i = 0; i < Character::JOINT_NUM; i++) {
       glm::vec3 pos = character->joint_positions[i];
-      printf("%d: %f, %f, %f\n", i, pos.x, pos.y, pos.z);
+      glm::mat3 rot = character->joint_rotations[i];
+      // printf("Pos %d: %f, %f, %f\n", i, pos.x, pos.y, pos.z);
+      // printf("Rot %d: %f, %f, %f\n", i, pos.x, pos.y, pos.z);
       glVertex3f(pos.x, pos.y, pos.z);
     }
-    printf("--------------------------------\n");
     glEnd();
     glPointSize(1.0);
 
